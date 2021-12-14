@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <div ref="appl" class="application" v-bind:style="{ backgroundImage: bgimg }">
+    <!--<div ref="appl" class="application" v-bind:style="{ backgroundImage: bgimg }">!-->
+    <div ref="appl" class="application" v-bind:style="{ backgroundImg }">
+    <!--<div ref="appl" class="application" v-bind:style="{ backgroundImage: `linear-gradient(to right top, ${this.backgroundColor1}, ${this.backgroundColor2}, ${this.backgroundColor3}, ${this.backgroundColor4})`}">!-->
       <v-container class="app-container">
         <h1 class="app-title">Spottrend</h1>
         <v-row>
@@ -33,11 +35,16 @@
           </v-col>
         </v-row>
         <v-row v-else>
-          <v-col>
-            <Playlist :playlist="playlist" :country="country" v-on:changeBackground="updateBackground"/>
+          <v-col :elevation="24">
+            <Playlist 
+              :playlist="playlist" 
+              :country="country" 
+              v-on:changeBackground="updateBackground"
+              @playTrack="sendMusicToPlayer"
+            />
           </v-col>
-          <v-col class="player">
-            prei
+          <v-col >
+            <Player :elevation="24" :track="trackComp" />
           </v-col>
         </v-row>
       </v-container>
@@ -49,11 +56,13 @@
 
 import axios from 'axios';
 import Playlist from '../components/Playlist.vue'
+import Player from '../components/Player.vue';
 
 export default {
   name: 'App',
   components:{
-    Playlist
+    Playlist,
+    Player
   },
   props: {
     msg: String
@@ -71,7 +80,7 @@ export default {
       backgroundColor2: "#000000",
       backgroundColor3: "#000000",
       backgroundColor4: "#000000",
-      
+      track: {}
     }
   },
   mounted() {
@@ -88,7 +97,13 @@ export default {
     },
     bgimg() {
       return `linear-gradient(to right top, ${this.backgroundColor1}, ${this.backgroundColor2}, ${this.backgroundColor3}, ${this.backgroundColor4})`;
+    },
+    trackComp(){
+      return this.track;
     }
+    //track(){
+      //return this.playlist.tracks.items[0].track;
+    //}
   },
   methods:{
     async getPlaylist(playlistID) {
@@ -106,7 +121,7 @@ export default {
     async searchPlaylist() {
       this.loading = true;
       const searchTerm = `Top 50 - ${this.countrySearch}`;
-      console.log(searchTerm);
+      //console.log(searchTerm);
       const response = await axios.get(`https://api.spotify.com/v1/search?q=${searchTerm}&type=playlist`, {
       headers: {
         'Accept': 'application/json',
@@ -117,20 +132,25 @@ export default {
       this.getPlaylist(playlistID);
     },
     updateBackground (palette) {
-      console.log('emitei tudo', palette);
+      //console.log('emitei tudo', palette);
       this.backgroundColor = palette;
       this.backgroundColor = this.backgroundColor.map(([r, g, b]) => ["#", r.toString(16), g.toString(16), b.toString(16)].join(""))
       this.backgroundColor1 = this.backgroundColor[0];
       this.backgroundColor2 = this.backgroundColor[1];
       this.backgroundColor3 = this.backgroundColor[2];
       this.backgroundColor4 = this.backgroundColor[3];
-      console.log(this.bgimg);
-      console.log(this.backgroundImg);
-      console.log(this.$refs.appl.style);
-      console.log('linear-gradient(to right top, '+ this.backgroundColor1+', '+this.backgroundColor2+', '+this.backgroundColor3+', '+this.backgroundColor4+')');
+      //console.log(this.bgimg);
+      //console.log(this.backgroundImg);
+      //console.log(this.$refs.appl.style);
+      //console.log('linear-gradient(to right top, '+ this.backgroundColor1+', '+this.backgroundColor2+', '+this.backgroundColor3+', '+this.backgroundColor4+')');
       this.$refs.appl.style.backgroundImage = 'linear-gradient(to right top, '+ this.backgroundColor1+', '+this.backgroundColor2+', '+this.backgroundColor3+', '+this.backgroundColor4+')';
+      //console.log(this.$refs.appl.style);
       //his.forceRerender();
     },
+    sendMusicToPlayer(track){
+      this.track = track;
+
+    }
   }
 }
 </script>

@@ -1,33 +1,34 @@
 <template>
-     <div class="playlist">
-        <div class="playlist-header">
-            <div class="playlist-title">
-              <p>{{ playlist.name }}</p>
-            </div>
-            <div class="playlist-flag">
-              <img ref="img" :src="getImgUrl(country)" height="50px" width="100px" alt="flag" />
-            </div>
-        </div>
-        <v-spacer></v-spacer>
-        <v-list class="ma-3 tracklist" two-line>
-            <v-list-item
+    <div class="playlist">
+      <div class="playlist-header">
+          <div class="playlist-title">
+            <p>{{ playlist.name }}</p>
+          </div>
+          <div class="playlist-flag">
+            <img ref="img" :src="getImgUrl(country)" height="50px" width="100px" alt="flag" />
+          </div>
+      </div>
+      <v-spacer></v-spacer>
+      <v-list class="ma-3 tracklist" two-line>
+          <v-list-item
             v-for="track in playlist.tracks.items"
             :key="track.track.id"
-            >
-            <v-list-item-avatar>
-              <v-img :src="track.track.album.images[0].url"></v-img>
-            </v-list-item-avatar>
-            <v-list-item-content class="track-info mx-3">
-              <v-list-item-title v-text="track.track.name"></v-list-item-title>
-              <v-list-item-subtitle v-text="track.track.artists[0].name"></v-list-item-subtitle>
-            </v-list-item-content>
-            
-            <v-list-item-action>
-                <v-list-item-action-text v-text="msToTime(track.track.duration_ms)"></v-list-item-action-text>
-              </v-list-item-action>
+            @click="playTrack(track)"
+          >
+          <v-list-item-avatar>
+            <v-img :src="track.track.album.images[0].url"></v-img>
+          </v-list-item-avatar>
+          <v-list-item-content class="track-info mx-3">
+            <v-list-item-title v-text="track.track.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="track.track.artists[0].name"></v-list-item-subtitle>
+          </v-list-item-content>
+          
+          <v-list-item-action>
+              <v-list-item-action-text v-text="msToTime(track.track.duration_ms)"></v-list-item-action-text>
+            </v-list-item-action>
 
-            </v-list-item>
-        </v-list>
+          </v-list-item>
+      </v-list>
     </div>
 </template>
 <script>
@@ -49,7 +50,7 @@ export default {
   watch: {
     country() {
       this.getColorPalette();
-    }
+    },
   },
   mounted (){
     this.$nextTick(() => {
@@ -57,7 +58,9 @@ export default {
           this.palette = await getPaletteFromURL(this.$refs.img.src);
           //console.log('emiti no filho', this.palette);
           console.log(this.palette);
+          console.log(this.playlist);
           this.$emit('changeBackground', this.palette);
+          this.$emit('playTrack', this.playlist.tracks.items[0].track);
       })();
     })
   },
@@ -80,13 +83,17 @@ export default {
       this.$emit('changeBackground', this.palette);
       console.log('emiti no filho', this.palette);
     },
-    convertColor(r, g, b){
-      const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
-        const hex = x.toString(16)
-        return hex.length === 1 ? '0' + hex : hex
-      }).join('')
-
+    playTrack(track){
+      console.log(track.track);
+      this.$emit('playTrack', track.track);
     }
+    //convertColor(r, g, b){
+      //const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
+        //const hex = x.toString(16)
+        //return hex.length === 1 ? '0' + hex : hex
+      //}).join('')
+
+    //}
   }
 }
 </script>
