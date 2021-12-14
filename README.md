@@ -1,5 +1,6 @@
 # spottrend
 
+Project created to show Top 50 songs on different countries around the world. It uses Spotify API for getting information and Spotify Web Playback SDK for playing songs.
 ## Project setup
 ```
 npm install
