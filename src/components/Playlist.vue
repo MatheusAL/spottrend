@@ -137,7 +137,4 @@ export default {
   margin-left: 8px;
 }
 
-.tracklist{
-
-}
 </style>
