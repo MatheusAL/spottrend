@@ -136,7 +136,6 @@ export default {
       this.track = track;
     },
     updateTrack(trackID){
-      console.log(trackID);
       const newTrack = this.playlist.tracks.items.find(tr => tr.track.id === trackID);
       this.track = newTrack.track;
     }

@@ -16,7 +16,7 @@
     </div> 
     <v-footer app bottom elevation="2" color="#00E676" height="35" padless fixed>
       <div class="footer">
-        <b class="footer-content">Link pro github e dale</b>
+        <b class="footer-content">Link pro github</b>
       </div>
     </v-footer>
   </div>

@@ -54,19 +54,13 @@ export default {
       this.getColorPalette();
       console.log(val, oldVal);
     },
-    //country() {
-      //console.log("alterou o country");
-      //this.getColorPalette();
-    //},
+
   },
   mounted (){
     this.$nextTick(() => {
       (async () => {
           //this.palette = await getPaletteFromURL(this.$refs.img.src);
           this.palette = await getPaletteFromURL(document.getElementById("imgCountry").src);
-          //console.log('emiti no filho', this.palette);
-          console.log(this.palette);
-          console.log(this.playlist);
           this.$emit('changeBackground', this.palette);
           this.$emit('playTrack', this.playlist.tracks.items[0].track);
       })();
@@ -87,14 +81,10 @@ export default {
       return images('./' + pet + ".png")
     },
     async getColorPalette() {
-      //console.log(document.getElementById("imgCountry").src);
-      //this.palette = await getPaletteFromURL(document.getElementById("imgCountry").src);
       this.palette = this.getImgUrl(this.country);
-      console.log(this.palette);
       this.$emit('changeBackground', this.palette);
     },
     playTrack(track){
-      console.log(track.track);
       this.$emit('playTrack', track.track);
     }
   }

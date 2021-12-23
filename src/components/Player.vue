@@ -167,7 +167,6 @@ export default {
         },
         play () {
             if(!this.isPlaying) {
-                //this.player.togglePlay();
                 this.playMusic();
             }else{
                 this.pause();
@@ -192,7 +191,7 @@ export default {
             //this.songPlayingId = this.track.id;
         },
         async pause() {
-            const response = await axios.put(`https://api.spotify.com/v1/me/player/pause?device_id=${this.device_id}`,{},{ 
+            await axios.put(`https://api.spotify.com/v1/me/player/pause?device_id=${this.device_id}`,{},{ 
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
@@ -200,7 +199,6 @@ export default {
                 
                 }
             });
-            console.log(response);
             this.isPlaying = false;
         },
         prevTrack(){
@@ -211,7 +209,6 @@ export default {
                 }
 
                 this.songPlayingId = state.track_window.previous_tracks[0].id;
-                console.log(state.track_window.previous_tracks);
                 this.player.previousTrack();
                 this.$emit('songChanged', this.songPlayingId);
 
@@ -226,7 +223,6 @@ export default {
                 }
 
                 this.songPlayingId = state.track_window.next_tracks[0].id;
-                console.log(state.track_window.previous_tracks);
                 this.player.nextTrack();
                 this.$emit('songChanged', this.songPlayingId);
             });
