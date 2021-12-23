@@ -1,8 +1,6 @@
 <template>
   <v-app>
-    <!--<div ref="appl" class="application" v-bind:style="{ backgroundImage: bgimg }">!-->
-    <div ref="appl" class="application" v-bind:style="{ backgroundImg }">
-    <!--<div ref="appl" class="application" v-bind:style="{ backgroundImage: `linear-gradient(to right top, ${this.backgroundColor1}, ${this.backgroundColor2}, ${this.backgroundColor3}, ${this.backgroundColor4})`}">!-->
+    <div ref="appl" class="application" >
       <v-container class="app-container">
         <h1 class="app-title">Spottrend</h1>
         <v-row>
@@ -39,12 +37,17 @@
             <Playlist 
               :playlist="playlist" 
               :country="country" 
-              v-on:changeBackground="updateBackground"
+              @changeBackground="updateBackground"
               @playTrack="sendMusicToPlayer"
             />
           </v-col>
           <v-col >
-            <Player :elevation="24" :track="trackComp" />
+            <Player 
+              :elevation="24" 
+              :track="trackComp" 
+              :playlistURL="playlist.uri"
+              @songChanged="updateTrack"
+            />
           </v-col>
         </v-row>
       </v-container>
@@ -71,9 +74,9 @@ export default {
     return{
       token: '',
       playlist: [],
-      countrySearch: '',
+      countrySearch: 'Mundo',
       loading: true,
-      items: ['Brasil', 'França', 'Mexico', 'Inglaterra'],
+      items: ['Brasil', 'França', 'Mexico', 'Estados Unidos', 'Argentina', 'Espanha', 'Chile', 'Peru', 'Paraguai', 'Reino Unido'],
       country: '',
       backgroundColor: [],
       backgroundColor1: "#000000",
@@ -85,25 +88,14 @@ export default {
   },
   mounted() {
     this.token = localStorage.getItem('access_token');
-    if(this.token !== null){
-      console.log(this.token);
-    }
+    //if(this.token !== null){
+    //}
     this.getPlaylist('37i9dQZEVXbMDoHDwVN2tF');
   },
   computed: {
-    backgroundImg: function() {
-      console.log('update po');
-      return {'background-image': `linear-gradient(to right top, ${this.backgroundColor[0]}, ${this.backgroundColor[1]}, ${this.backgroundColor[2]}, ${this.backgroundColor[3]})`}
-    },
-    bgimg() {
-      return `linear-gradient(to right top, ${this.backgroundColor1}, ${this.backgroundColor2}, ${this.backgroundColor3}, ${this.backgroundColor4})`;
-    },
     trackComp(){
       return this.track;
     }
-    //track(){
-      //return this.playlist.tracks.items[0].track;
-    //}
   },
   methods:{
     async getPlaylist(playlistID) {
@@ -114,7 +106,8 @@ export default {
         'Authorization': `Bearer ${this.token}`,
       }});
       this.playlist = response.data;
-      this.country = this.playlist.name.split(" ").pop();
+      this.country = this.countrySearch;//this.playlist.name.split(" ").pop();
+      
       this.country = this.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
       this.loading = false;
     },
@@ -132,24 +125,20 @@ export default {
       this.getPlaylist(playlistID);
     },
     updateBackground (palette) {
-      //console.log('emitei tudo', palette);
       this.backgroundColor = palette;
-      this.backgroundColor = this.backgroundColor.map(([r, g, b]) => ["#", r.toString(16), g.toString(16), b.toString(16)].join(""))
-      this.backgroundColor1 = this.backgroundColor[0];
-      this.backgroundColor2 = this.backgroundColor[1];
-      this.backgroundColor3 = this.backgroundColor[2];
-      this.backgroundColor4 = this.backgroundColor[3];
-      //console.log(this.bgimg);
-      //console.log(this.backgroundImg);
-      //console.log(this.$refs.appl.style);
-      //console.log('linear-gradient(to right top, '+ this.backgroundColor1+', '+this.backgroundColor2+', '+this.backgroundColor3+', '+this.backgroundColor4+')');
+      this.backgroundColor1 = `rgb(${this.backgroundColor[0][0]}, ${this.backgroundColor[0][1]}, ${this.backgroundColor[0][2]})`;
+      this.backgroundColor2 = `rgb(${this.backgroundColor[1][0]}, ${this.backgroundColor[1][1]}, ${this.backgroundColor[1][2]})`;
+      this.backgroundColor3 = `rgb(${this.backgroundColor[2][0]}, ${this.backgroundColor[2][1]}, ${this.backgroundColor[2][2]})`;
+      this.backgroundColor4 = `rgb(${this.backgroundColor[3][0]}, ${this.backgroundColor[3][1]}, ${this.backgroundColor[3][2]})`;
       this.$refs.appl.style.backgroundImage = 'linear-gradient(to right top, '+ this.backgroundColor1+', '+this.backgroundColor2+', '+this.backgroundColor3+', '+this.backgroundColor4+')';
-      //console.log(this.$refs.appl.style);
-      //his.forceRerender();
     },
     sendMusicToPlayer(track){
       this.track = track;
-
+    },
+    updateTrack(trackID){
+      console.log(trackID);
+      const newTrack = this.playlist.tracks.items.find(tr => tr.track.id === trackID);
+      this.track = newTrack.track;
     }
   }
 }

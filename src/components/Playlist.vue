@@ -5,7 +5,7 @@
             <p>{{ playlist.name }}</p>
           </div>
           <div class="playlist-flag">
-            <img ref="img" :src="getImgUrl(country)" height="50px" width="100px" alt="flag" />
+            <img id="imgCountry" ref="img" :src="getImgUrl(country)" height="50px" width="100px" alt="flag" />
           </div>
       </div>
       <v-spacer></v-spacer>
@@ -39,7 +39,7 @@ export default {
     playlist: Object,
     country: {
       type: String,
-      default: 'Franca'
+      default: 'Mexico'
     }
   },
   data: function () {
@@ -48,14 +48,22 @@ export default {
     }
   },
   watch: {
-    country() {
+    deep: true,
+    immediate: true,
+    country(val, oldVal) {
       this.getColorPalette();
+      console.log(val, oldVal);
     },
+    //country() {
+      //console.log("alterou o country");
+      //this.getColorPalette();
+    //},
   },
   mounted (){
     this.$nextTick(() => {
       (async () => {
-          this.palette = await getPaletteFromURL(this.$refs.img.src);
+          //this.palette = await getPaletteFromURL(this.$refs.img.src);
+          this.palette = await getPaletteFromURL(document.getElementById("imgCountry").src);
           //console.log('emiti no filho', this.palette);
           console.log(this.palette);
           console.log(this.playlist);
@@ -75,25 +83,20 @@ export default {
       return minutes + ":" + seconds;
     },
     getImgUrl(pet) {
-      var images = require.context('../assets/', false, /\.png$/)
+      var images = require.context('../assets/', false, /\.png$/);
       return images('./' + pet + ".png")
     },
     async getColorPalette() {
-      this.palette = await getPaletteFromURL(this.$refs.img.src);
+      //console.log(document.getElementById("imgCountry").src);
+      //this.palette = await getPaletteFromURL(document.getElementById("imgCountry").src);
+      this.palette = this.getImgUrl(this.country);
+      console.log(this.palette);
       this.$emit('changeBackground', this.palette);
-      console.log('emiti no filho', this.palette);
     },
     playTrack(track){
       console.log(track.track);
       this.$emit('playTrack', track.track);
     }
-    //convertColor(r, g, b){
-      //const rgbToHex = (r, g, b) => '#' + [r, g, b].map(x => {
-        //const hex = x.toString(16)
-        //return hex.length === 1 ? '0' + hex : hex
-      //}).join('')
-
-    //}
   }
 }
 </script>

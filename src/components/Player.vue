@@ -30,7 +30,7 @@
                 <v-icon 
                     size="60"
                     class="px-3"
-                    @click="playMusic"
+                    @click="play"
                 >
                     {{ isPlaying ? 'mdi-pause' : 'mdi-play' }}
                 </v-icon>
@@ -70,6 +70,9 @@ export default {
     props: {
         track:{
             type: Object,
+        },
+        playlistURL: {
+            type: String,
         }
     },
     created(){
@@ -91,11 +94,24 @@ export default {
 
             this.player.addListener('ready', ({ device_id }) => {
                 this.transferPlayback(device_id);
+                this.device_id = device_id;
+                this.playerReady = true;
                 console.log('Ready with Device ID', device_id);
             });
 
             this.player.addListener('not_ready', ({ device_id }) => {
                 console.log('Device ID has gone offline', device_id);
+            });
+
+            this.player.addListener('player_state_changed', ({
+                position,
+                duration,
+                track_window: { current_track }
+            }) => {
+                
+                console.log('Currently Playing', current_track);
+                console.log('Position in Song', position);
+                console.log('Duration of Song', duration);
             });
 
 
@@ -114,18 +130,20 @@ export default {
             isPlaying: false,
             progress: 0,
             player: null,
+            device_id: '',
+            songPlayingId: '',
         }
     },
     watch: {
         track:{
             deep: true,
             handler(){
-                this.playerReady=true;
-                //if(this.track){
-                  //  this.playerReady = true;    
-                //}else{
-                  //  this.playerReady = false;
-                //}
+                if(this.playerReady){
+                    //if(this.isPlaying)
+                        this.play();
+                    
+                    console.log(this.track);
+                }
             }
         }
     },
@@ -138,7 +156,8 @@ export default {
                 'Authorization': `Bearer ${this.token}`,
             },
             body: {
-                device_ids: [device_id]
+                device_ids: [device_id],
+                play: false,
             }
             });
             if(response.status == '204'){
@@ -146,15 +165,73 @@ export default {
             }
             
         },
-        playMusic(){
-           this.isPlaying = !this.isPlaying;
-           this.player.togglePlay();
+        play () {
+            if(!this.isPlaying) {
+                //this.player.togglePlay();
+                this.playMusic();
+            }else{
+                this.pause();
+            }
+        },
+        async playMusic(){
+            const uris = JSON.stringify({
+                context_uri: this.playlistURL,
+                offset: {
+                    uri: this.track.uri,
+                },
+            });
+            axios({
+                url: `https://api.spotify.com/v1/me/player/play?device_id=${this.device_id}`,
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                },
+                data: uris,
+            })
+            this.isPlaying = true;
+            //this.songPlayingId = this.track.id;
+        },
+        async pause() {
+            const response = await axios.put(`https://api.spotify.com/v1/me/player/pause?device_id=${this.device_id}`,{},{ 
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.token}`,
+                
+                }
+            });
+            console.log(response);
+            this.isPlaying = false;
         },
         prevTrack(){
-            this.player.previousTrack();
+            this.player.getCurrentState().then(state => {
+                if (!state) {
+                    console.error('User is not playing music through the Web Playback SDK');
+                    return;
+                }
+
+                this.songPlayingId = state.track_window.previous_tracks[0].id;
+                console.log(state.track_window.previous_tracks);
+                this.player.previousTrack();
+                this.$emit('songChanged', this.songPlayingId);
+
+            });
+            
         },
         nextTrack(){
-            this.player.nextTrack();
+            this.player.getCurrentState().then(state => {
+                if (!state) {
+                    console.error('User is not playing music through the Web Playback SDK');
+                    return;
+                }
+
+                this.songPlayingId = state.track_window.next_tracks[0].id;
+                console.log(state.track_window.previous_tracks);
+                this.player.nextTrack();
+                this.$emit('songChanged', this.songPlayingId);
+            });
+            
+            //this.$emit('songChanged', this.songPlayingId);
         },
         msToTime(duration) {
             var seconds = Math.floor((duration / 1000) % 60),
