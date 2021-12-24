@@ -2,7 +2,7 @@
   <div class="home">
     <div class="description">
       <h1 class="title">SPOTTREND</h1>
-      <p class="content">This is an app where you can see what songs are currently trending in different countries around the world</p>
+      <p class="content">This is a small application where you can see which songs are currently trending in different countries around the world!</p>
       <v-btn
         class="ma-2 btn"
         block
@@ -16,7 +16,9 @@
     </div> 
     <v-footer app bottom elevation="2" color="#00E676" height="35" padless fixed>
       <div class="footer">
-        <b class="footer-content">Link pro github</b>
+        <b class="footer-content">
+          <a href="https://github.com/MatheusAL/spottrend">Link pro github</a>
+        </b>
       </div>
     </v-footer>
   </div>
@@ -32,7 +34,7 @@ export default {
   },
   methods: {
     Login() {
-       window.location.href ='http://localhost:8888/login';
+       window.location.href ='https://backend-spottrend.herokuapp.com/login';
     }
   },
   mounted() {

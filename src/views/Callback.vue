@@ -17,11 +17,10 @@ export default {
         while ((e = r.exec(q))) {
         hashParams[e[1]] = decodeURIComponent(e[2]);
         }
-        console.log(hashParams);
         // return hashParams;
         const token = hashParams.access_token;
         localStorage.setItem('access_token', token);
-        window.location.assign("http://localhost:8080/app");
+        window.location.assign("https://spottrend.vercel.app/app");
     }
 }
 </script>
