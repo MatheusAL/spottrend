@@ -76,7 +76,7 @@ export default {
       playlist: [],
       countrySearch: 'Mundo',
       loading: true,
-      items: ['Brasil', 'França', 'Mexico', 'Estados Unidos', 'Argentina', 'Espanha', 'Chile', 'Peru', 'Paraguai', 'Reino Unido'],
+      items: ['Brasil', 'França', 'Mexico', 'Estados Unidos', 'Argentina', 'Espanha', 'Chile', 'Peru', 'Paraguai'],
       country: '',
       backgroundColor: [],
       backgroundColor1: "#000000",

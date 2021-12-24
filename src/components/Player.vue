@@ -141,8 +141,6 @@ export default {
                 if(this.playerReady){
                     //if(this.isPlaying)
                         this.play();
-                    
-                    console.log(this.track);
                 }
             }
         }
