@@ -43,8 +43,8 @@ export default {
   },
   methods: {
     Login() {
-        //window.location.href ='http://localhost:8888/login';
-        window.location.href ='https://backend-spottrend.herokuapp.com/login';
+        window.location.href ='http://localhost:8888/login';
+        //window.location.href ='https://backend-spottrend.herokuapp.com/login';
     }
   },
   mounted() {

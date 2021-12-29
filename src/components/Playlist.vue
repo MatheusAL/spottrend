@@ -95,9 +95,12 @@ export default {
 
 .playlist{
   border-radius: 20px;
-  background-color: white;
+  backdrop-filter: blur(20px) !important;
+  box-shadow: 0 20px 50px rgba(255,255,255,0.5) !important;
   overflow-y: scroll;
   max-height: 65vh;
+  
+
 }
 
 .playlist::-webkit-scrollbar {
@@ -136,5 +139,9 @@ export default {
 .track-info{
   margin-left: 8px;
 }
-
+.tracklist{
+  background-color: transparent  !important;
+  color: white !important;
+  font-weight: bold;
+}
 </style>

@@ -33,21 +33,30 @@
           </v-col>
         </v-row>
         <v-row v-else>
-          <v-col :elevation="24">
-            <Playlist 
-              :playlist="playlist" 
-              :country="country" 
-              @changeBackground="updateBackground"
-              @playTrack="sendMusicToPlayer"
-            />
+          <v-col>
+            <v-card
+              class="rounded-lg bg" 
+              :elevation="18"
+            >
+              <Playlist 
+                :playlist="playlist" 
+                :country="country" 
+                @changeBackground="updateBackground"
+                @playTrack="sendMusicToPlayer"
+              />
+            </v-card>
           </v-col>
           <v-col >
-            <Player 
-              :elevation="24" 
-              :track="trackComp" 
-              :playlistURL="playlist.uri"
-              @songChanged="updateTrack"
-            />
+            <v-card
+              class="rounded-lg bg"
+              :elevation="18" 
+            >
+              <Player 
+                :track="trackComp" 
+                :playlistURL="playlist.uri"
+                @songChanged="updateTrack"
+              />
+            </v-card>
           </v-col>
         </v-row>
       </v-container>
@@ -167,6 +176,10 @@ export default {
 
 .app-container{
   max-width: 1500px !important;
+}
+
+.bg{
+  background-color: rgba(255,255,255,0.3)  !important;
 }
 
 </style>
