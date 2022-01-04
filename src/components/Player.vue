@@ -42,14 +42,23 @@
       >
       </v-progress-linear>
     </div>
+    <v-dialog v-model="openDialog" width="500">
+      <modal 
+        @closeModal="openDialog = false"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import Modal from "../components/Modal.vue"
 
 export default {
   name: "Player",
+  components:{
+    Modal,
+  },
   props: {
     track: {
       type: Object,
@@ -57,6 +66,9 @@ export default {
     playlistURL: {
       type: String,
     },
+    userStatus: {
+      type: String,
+    }
   },
   data() {
     return {
@@ -68,6 +80,7 @@ export default {
       songPlayingId: "",
       positionCheckInterval: null,
       progressValue: 0,
+      openDialog: false,
     };
   },
   created() {
@@ -76,7 +89,9 @@ export default {
     script.async = true;
     const token = localStorage.getItem("access_token");
     document.body.appendChild(script);
-
+    if(this.userStatus === 'free' || this.userStatus === 'open'){
+      return;
+    }
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
@@ -99,15 +114,15 @@ export default {
         console.log("Device ID has gone offline", device_id);
       });
 
-      /* this.player.addListener(
-        "player_state_changed",
-        ({ position, duration, track_window: { current_track } }) => {
-          console.log("Currently Playing", current_track);
-          console.log("Position in Song", position);
-          console.log("Duration of Song", duration);
+      this.player.addListener('player_state_changed', ({
+        paused,
+        track_window: { current_track }
+      }) => {
+        if(this.songPlayingId !== current_track.id && !paused){
+          this.songPlayingId = current_track.id;
+          this.$emit("songChanged", this.songPlayingId);
         }
-      ); */
-
+      });
       this.player.connect();
     };
   },
@@ -146,6 +161,10 @@ export default {
       }
     },
     play() {
+      if(this.userStatus === 'free' || this.userStatus === 'open'){
+        this.openDialog = true;
+        return;
+      }
       if (!this.isPlaying) {
         this.playMusic();
       } else {
@@ -153,6 +172,9 @@ export default {
       }
     },
     async playMusic() {
+      if(this.userStatus === 'free' || this.userStatus === 'open'){
+        return;
+      }
       const uris = JSON.stringify({
         context_uri: this.playlistURL,
         offset: {

@@ -54,6 +54,7 @@
               <Player 
                 :track="trackComp" 
                 :playlistURL="playlist.uri"
+                :userStatus="userStatus"
                 @songChanged="updateTrack"
               />
             </v-card>
@@ -85,14 +86,15 @@ export default {
       playlist: [],
       countrySearch: 'Mundo',
       loading: true,
-      items: ['Brasil', 'França', 'Mexico', 'Estados Unidos', 'Argentina', 'Espanha', 'Chile', 'Peru', 'Paraguai'],
+      items: ['Mundo','Brasil', 'França', 'Mexico', 'Estados Unidos', 'Argentina', 'Espanha', 'Chile', 'Peru', 'Paraguai', 'Japao', 'Alemanha', 'Italia', 'Russia'],
       country: '',
       backgroundColor: [],
       backgroundColor1: "#000000",
       backgroundColor2: "#000000",
       backgroundColor3: "#000000",
       backgroundColor4: "#000000",
-      track: {}
+      track: {},
+      userStatus: '',
     }
   },
   mounted() {
@@ -100,6 +102,7 @@ export default {
     //if(this.token !== null){
     //}
     this.getPlaylist('37i9dQZEVXbMDoHDwVN2tF');
+    this.getUserStatus();
   },
   computed: {
     trackComp(){
@@ -115,7 +118,7 @@ export default {
         'Authorization': `Bearer ${this.token}`,
       }});
       this.playlist = response.data;
-      this.country = this.countrySearch;//this.playlist.name.split(" ").pop();
+      this.country = this.countrySearch;
       
       this.country = this.country.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
       this.loading = false;
@@ -123,7 +126,6 @@ export default {
     async searchPlaylist() {
       this.loading = true;
       const searchTerm = `Top 50 - ${this.countrySearch}`;
-      //console.log(searchTerm);
       const response = await axios.get(`https://api.spotify.com/v1/search?q=${searchTerm}&type=playlist`, {
       headers: {
         'Accept': 'application/json',
@@ -147,6 +149,15 @@ export default {
     updateTrack(trackID){
       const newTrack = this.playlist.tracks.items.find(tr => tr.track.id === trackID);
       this.track = newTrack.track;
+    },
+    async getUserStatus(){
+      const response = await axios.get('https://api.spotify.com/v1/me', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.token}`,
+      }});
+      this.userStatus = response.data.product;
     }
   }
 }
