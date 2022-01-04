@@ -1,7 +1,11 @@
 # Spottrend
 
-Project created to show Top 50 songs on different countries around the world. It uses Spotify API for getting information and Spotify Web Playback SDK for playing songs.
+Project created to show Top 50 songs on different countries around the world. It uses Spotify API for getting information about the playlists and Spotify Web Playback SDK for playing songs for premium users.
 
+#  App images
+
+Page
+![Page](https://raw.githubusercontent.com/MatheusAL/spottrend/master/src/assets/Screenshots/app.png)
 ## Project setup
 ```
 npm install
