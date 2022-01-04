@@ -4,8 +4,17 @@ Project created to show Top 50 songs on different countries around the world. It
 
 #  App images
 
-Page
-![Page](https://raw.githubusercontent.com/MatheusAL/spottrend/master/src/assets/Screenshots/app.png)
+## Page
+![App](https://raw.githubusercontent.com/MatheusAL/spottrend/master/src/assets/Screenshots/app.jpeg)
+
+
+## Playlist
+![Playlist](https://raw.githubusercontent.com/MatheusAL/spottrend/master/src/assets/Screenshots/playlist.jpeg)
+
+## Player
+![Player](https://raw.githubusercontent.com/MatheusAL/spottrend/master/src/assets/Screenshots/player.jpeg)
+
+
 ## Project setup
 ```
 npm install
