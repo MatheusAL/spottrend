@@ -3,8 +3,8 @@
     <div ref="appl" class="application" >
       <v-container class="app-container">
         <h1 class="app-title">Spottrend</h1>
-        <v-row>
-          <v-col cols="12">
+        <v-row class="justify-center">
+          <v-col cols="6">
             <v-autocomplete
               v-model="countrySearch"
               :items="items"
