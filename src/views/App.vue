@@ -158,6 +158,7 @@ export default {
         'Authorization': `Bearer ${this.token}`,
       }});
       this.userStatus = response.data.product;
+      console.log(this.userStatus);
     }
   }
 }

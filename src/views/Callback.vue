@@ -20,8 +20,8 @@ export default {
         // return hashParams;
         const token = hashParams.access_token;
         localStorage.setItem('access_token', token);
-        window.location.assign("https://spottrend.vercel.app/app");
-        //window.location.assign("http://localhost:8080/app");
+        //window.location.assign("https://spottrend.vercel.app/app");
+        window.location.assign("http://localhost:8080/app");
     }
 }
 </script>

@@ -1,52 +1,57 @@
 <template>
-  <div v-if="!playerReady">
-    <v-progress-circular
-      :size="90"
-      :width="7"
-      color="green"
-      indeterminate
-    ></v-progress-circular>
-  </div>
-  <div v-else class="player">
-    <div class="track-image mx-auto my-8">
-      <v-img
-        :src="track.album.images[0].url"
-        width="250px"
-        height="250px"
-      ></v-img>
+  <div class="player-div">
+    <div v-if="!playerReady">
+      <v-progress-circular
+        :size="90"
+        :width="7"
+        color="green"
+        indeterminate
+      ></v-progress-circular>
     </div>
-
-    <div class="player-info mx-auto">
-      <h1>{{ track.name }}</h1>
-      <h3>{{ track.artists[0].name }}</h3>
-      <div class="player-controls">
-        <v-icon large class="px-3" color="black" @click="prevTrack">
-          mdi-skip-previous
-        </v-icon>
-        <v-icon size="60" class="px-3" color="black" @click="play">
-          {{ isPlaying ? "mdi-pause" : "mdi-play" }}
-        </v-icon>
-        <v-icon large class="px-3" color="black" @click="nextTrack"> mdi-skip-next </v-icon>
+    <div v-else-if="!freeUser" class="player">
+      <div class="track-image mx-auto my-8">
+        <v-img
+          :src="track.album.images[0].url"
+          width="250px"
+          height="250px"
+        ></v-img>
       </div>
+
+      <div class="player-info mx-auto">
+        <h1>{{ track.name }}</h1>
+        <h3>{{ track.artists[0].name }}</h3>
+        <div class="player-controls">
+          <v-icon large class="px-3" color="black" @click="prevTrack">
+            mdi-skip-previous
+          </v-icon>
+          <v-icon size="60" class="px-3" color="black" @click="play">
+            {{ isPlaying ? "mdi-pause" : "mdi-play" }}
+          </v-icon>
+          <v-icon large class="px-3" color="black" @click="nextTrack"> mdi-skip-next </v-icon>
+        </div>
+      </div>
+      <div class="player-time">
+        <p>{{ msToTime(progressValue) }}</p>
+        <p>{{ msToTime(track.duration_ms) }}</p>
+      </div>
+      <div class="player-progress">
+        <v-progress-linear
+          :value="(progressValue * 100) / track.duration_ms"
+          class="player-progress"
+          color="black"
+          background-color="grey"
+        >
+        </v-progress-linear>
+      </div>
+      <v-dialog v-model="openDialog" width="500">
+        <modal 
+          @closeModal="openDialog = false"
+        />
+      </v-dialog>
     </div>
-    <div class="player-time">
-      <p>{{ msToTime(progressValue) }}</p>
-      <p>{{ msToTime(track.duration_ms) }}</p>
+    <div v-else>
+      For being able to listen to songs using our player, you need to have a premium account. But you can still visualize all playlists.
     </div>
-    <div class="player-progress">
-      <v-progress-linear
-        :value="(progressValue * 100) / track.duration_ms"
-        class="player-progress"
-        color="black"
-        background-color="grey"
-      >
-      </v-progress-linear>
-    </div>
-    <v-dialog v-model="openDialog" width="500">
-      <modal 
-        @closeModal="openDialog = false"
-      />
-    </v-dialog>
   </div>
 </template>
 
@@ -81,18 +86,23 @@ export default {
       positionCheckInterval: null,
       progressValue: 0,
       openDialog: false,
+      freeUser: false
     };
   },
-  created() {
+  async created() {
+    window.onSpotifyWebPlaybackSDKReady = () => {};
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
     script.async = true;
     const token = localStorage.getItem("access_token");
     document.body.appendChild(script);
     if(this.userStatus === 'free' || this.userStatus === 'open'){
+      this.freeUser = true;
       return;
     }
-    window.onSpotifyWebPlaybackSDKReady = () => {
+    const { Player } = await this.waitForSpotifyWebPlaybackSDKToLoad();
+    console.log(Player);
+    //window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
         name: "Web Playback SDK",
         getOAuthToken: (cb) => {
@@ -124,7 +134,7 @@ export default {
         }
       });
       this.player.connect();
-    };
+    //};
   },
   computed: {
     token() {
@@ -266,6 +276,17 @@ export default {
         vm.getPlayerCurrentProgress()
       }, 1000);
     },
+    async waitForSpotifyWebPlaybackSDKToLoad () {
+      return new Promise(resolve => {
+        if (window.Spotify) {
+          resolve(window.Spotify);
+        } else {
+          window.onSpotifyWebPlaybackSDKReady = () => {
+            resolve(window.Spotify);
+          };
+        }
+      });
+    }
   },
 };
 </script>
@@ -303,5 +324,8 @@ export default {
   width: 98%;
   margin-left: 10px;
   margin-right: 10px;
+}
+.player-div {
+  max-height: 65vh;
 }
 </style>
